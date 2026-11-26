@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>一起学ICAO · 民航英语学习平台</title>
+<meta name="description" content="一起学ICAO — 民航英语 ICAO/OPI 学习练习平台。词汇训练、听力复述、OPI题库问答，全部本地素材离线可用。">
+<style>
+:root{
+  --bg:#0a1628;--bg2:#0d1d33;--panel:#12233d;--panel2:#0e1c31;
+  --ink:#e8eef7;--sub:#8fa5c0;--line:#1f3a5c;
+  --cyan:#38bdf8;--cyan-d:#0ea5e9;--amber:#fbbf24;--green:#34d399;--red:#f87171;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  background:
+    radial-gradient(900px 420px at 90% -8%, rgba(56,189,248,.10), transparent 60%),
+    radial-gradient(700px 380px at -4% 10%, rgba(251,191,36,.06), transparent 55%),
+    var(--bg);
+  background-attachment:fixed;color:var(--ink);min-height:100vh;padding-bottom:90px}
+a{color:var(--cyan);text-decoration:none}
+
+/* ===== 顶栏 ===== */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;
+  padding:12px 16px;background:rgba(10,22,40,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line)}
+.logo{font-size:19px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.logo .mark{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--cyan),#2563eb);font-size:16px;flex:none}
+.logo .t{background:linear-gradient(90deg,#7dd3fc,var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.topbar .sub{font-size:11px;color:var(--sub);margin-left:auto;text-align:right;line-height:1.3}
+
+/* ===== 主体 ===== */
+main{max-width:900px;margin:0 auto;padding:16px}
+.view{display:none;animation:fadein .25s}
+.view.on{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== 首页 ===== */
+.hero{background:linear-gradient(135deg,var(--panel),var(--panel2));border:1px solid var(--line);
+  border-radius:16px;padding:26px 22px;margin-bottom:16px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,rgba(56,189,248,.18),transparent 70%)}
+.hero h1{font-size:26px;font-weight:800;letter-spacing:1px;margin-bottom:8px}
+.hero h1 em{font-style:normal;color:var(--cyan)}
+.hero p{color:var(--sub);font-size:14px;line-height:1.7;max-width:560px}
+.hero .stats{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.stat{background:rgba(56,189,248,.08);border:1px solid var(--line);border-radius:10px;
+  padding:10px 16px;min-width:92px}
+.stat b{display:block;font-size:22px;font-weight:800;color:var(--cyan)}
+.stat span{font-size:11.5px;color:var(--sub)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px;
+  cursor:pointer;transition:border-color .2s,transform .15s;display:block}
+.card:hover{border-color:var(--cyan-d);transform:translateY(-2px)}
+.card .ic{font-size:26px;margin-bottom:8px}
+.card h3{font-size:16.5px;font-weight:700;margin-bottom:5px}
+.card p{font-size:12.5px;color:var(--sub);line-height:1.6}
+.card .go{color:var(--cyan);font-size:12px;margin-top:10px;display:inline-block}
+
+/* ===== 每日卡片 ===== */
+.daily-box{background:linear-gradient(160deg,#12253f,#0c1a2e);border:1px solid var(--line);
+  border-radius:16px;padding:20px;margin-bottom:16px}
+.daily-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.daily-tag{background:linear-gradient(90deg,#38bdf8,#2563eb);color:#fff;font-size:11.5px;font-weight:700;
+  padding:4px 10px;border-radius:999px;letter-spacing:.5px}
+.daily-date{font-size:12.5px;color:var(--sub)}
+.daily-body h4{color:var(--amber);font-size:15px;margin:14px 0 6px}
+.daily-body .en{font-size:14.5px;line-height:1.75}
+.daily-body .zh{font-size:12.5px;color:var(--sub);margin-top:2px}
+.daily-body ul{margin:4px 0 4px 18px}
+.daily-body li{font-size:13.5px;margin:5px 0;line-height:1.65}
+.daily-body .tip{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;
+  padding:10px 12px;font-size:13px;line-height:1.6;margin-top:8px}
+
+/* ===== 通用组件 ===== */
+.sec-title{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;margin:20px 0 12px}
+.sec-title .bar{width:4px;height:18px;border-radius:2px;background:linear-gradient(180deg,var(--cyan),#2563eb)}
+.crumb{font-size:12.5px;color:var(--sub);margin-bottom:10px}
+.crumb b{color:var(--cyan);cursor:pointer;font-weight:600}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 13px;
+  font-size:12.5px;color:var(--ink);cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--cyan-d)}
+.chip.sel{background:rgba(56,189,248,.15);border-color:var(--cyan-d);color:var(--cyan)}
+.btn{background:linear-gradient(135deg,var(--cyan-d),#2563eb);border:none;color:#fff;border-radius:10px;
+  padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;transition:filter .15s;font-family:inherit}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--cyan-d)}
+.btn.small{padding:6px 13px;font-size:12.5px;border-radius:8px}
+.btn:disabled{opacity:.4;cursor:default}
+.panel{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+
+/* ===== 词汇训练 ===== */
+.flash{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:30px 20px;
+  text-align:center;margin:14px 0;min-height:200px;display:flex;flex-direction:column;justify-content:center}
+.flash .cat{font-size:11.5px;color:var(--sub);margin-bottom:12px}
+.flash .word{font-size:26px;font-weight:800;letter-spacing:.3px;line-height:1.35}
+.flash .word.zh{color:var(--amber)}
+.flash .mean{font-size:15px;color:var(--sub);margin-top:12px;line-height:1.6;min-height:26px}
+.flash .hint{font-size:11.5px;color:#5a6f8c;margin-top:8px}
+.flash-ctl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.progress-bar{height:5px;background:var(--panel);border-radius:3px;overflow:hidden;margin:6px 0 14px}
+.progress-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:3px;transition:width .3s}
+
+/* 选择题 */
+.quiz-q{font-size:18px;font-weight:700;text-align:center;margin:18px 0 20px;line-height:1.5}
+.opts{display:grid;gap:10px;max-width:560px;margin:0 auto}
+.opt{background:var(--panel2);border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;
+  font-size:15px;cursor:pointer;transition:all .15s;text-align:left}
+.opt:hover{border-color:var(--cyan-d)}
+.opt.correct{border-color:var(--green);background:rgba(52,211,153,.12)}
+.opt.wrong{border-color:var(--red);background:rgba(248,113,113,.12)}
+.quiz-fb{max-width:560px;margin:14px auto 0;text-align:center;font-size:13.5px;color:var(--sub);min-height:20px}
+.quiz-fb b.ok{color:var(--green)} .quiz-fb b.no{color:var(--red)}
+
+/* ===== 听力复述 ===== */
+.listen-box{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:24px 20px;
+  text-align:center;margin:14px 0}
+.listen-box .src{font-size:11.5px;color:var(--sub);margin-bottom:14px}
+.listen-box .sentence{font-size:20px;font-weight:700;line-height:1.6;min-height:64px;
+  display:flex;align-items:center;justify-content:center}
+.listen-box .sentence.hidden-txt{color:transparent;text-shadow:0 0 18px rgba(232,238,247,.55);user-select:none}
+.listen-box .trans{font-size:13px;color:var(--sub);margin-top:10px;min-height:20px}
+.rate-row{display:flex;align-items:center;gap:12px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+.rate-row input[type=range]{width:160px;accent-color:var(--cyan-d)}
+.rate-row .rv{font-family:Consolas,monospace;color:var(--cyan);font-size:14px;min-width:46px}
+.listen-ctl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+/* ===== OPI题库 ===== */
+.qa-item{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:11px}
+.qa-q{font-size:15px;font-weight:600;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.qa-q .num{color:var(--cyan);font-family:Consolas,monospace;flex:none;font-size:13px;padding-top:2px}
+.qa-a{font-size:13.5px;color:var(--sub);line-height:1.75;margin-top:10px;padding-left:24px}
+.qa-a.hidden{display:none}
+.qa-tools{display:flex;gap:8px;margin-top:10px;padding-left:24px;flex-wrap:wrap}
+.mark-btn{border:1px solid var(--line);background:transparent;color:var(--sub);border-radius:7px;
+  padding:4px 11px;font-size:11.5px;cursor:pointer;font-family:inherit;transition:all .15s}
+.mark-btn:hover{border-color:var(--cyan-d);color:var(--cyan)}
+.mark-btn.did{background:rgba(52,211,153,.14);border-color:var(--green);color:var(--green)}
+.mark-btn.again{background:rgba(251,191,36,.12);border-color:var(--amber);color:var(--amber)}
+.done-badge{font-size:11px;color:var(--green);margin-left:6px}
+.count-note{font-size:12px;color:var(--sub);margin:6px 0 14px}
+
+/* ===== 底部导航 ===== */
+.tabbar{position:fixed;bottom:0;left:0;right:0;z-index:60;display:flex;background:rgba(10,22,40,.95);
+  backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;
+  cursor:pointer;color:var(--sub);border-radius:10px;transition:color .15s;user-select:none}
+.tab .ti{font-size:19px}
+.tab .tt{font-size:10.5px;font-weight:600}
+.tab.on{color:var(--cyan)}
+footer{max-width:900px;margin:26px auto 0;padding:0 16px;font-size:11.5px;color:#5a6f8c;line-height:1.7;text-align:center}
+
+@media (min-width:640px){.tabbar{display:none}body{padding-bottom:30px}
+  .navlinks{display:flex!important}}
+.navlinks{display:none;gap:4px;margin-left:14px}
+.navlink{padding:6px 12px;border-radius:9px;font-size:13px;color:var(--sub);cursor:pointer;font-weight:600}
+.navlink:hover{color:var(--ink);background:var(--panel)}
+.navlink.on{color:var(--cyan);background:rgba(56,189,248,.12)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span class="mark">✈</span><span class="t">一起学ICAO</span></div>
+  <div class="navlinks">
+    <div class="navlink on" data-v="home">首页</div>
+    <div class="navlink" data-v="vocab">词汇训练</div>
+    <div class="navlink" data-v="listen">听力复述</div>
+    <div class="navlink" data-v="opi">OPI题库</div>
+  </div>
+  <div class="sub" id="topDate"></div>
+</div>
+
+<main>
+  <!-- ============ 首页 ============ -->
+  <section class="view on" id="view-home">
+    <div class="hero">
+      <h1>一起学<em>ICAO</em></h1>
+      <p>民航英语 ICAO / OPI 备考练习平台 — 词汇训练 · 听力复述 · OPI问答题库。<br>全部内容来自本地素材，离线可用，进度自动保存在本机。</p>
+      <div class="stats">
+        <div class="stat"><b id="stVocab">0</b><span>词汇掌握</span></div>
+        <div class="stat"><b id="stQA">0</b><span>题目完成</span></div>
+        <div class="stat"><b id="stTotal">0</b><span>总练习数</span></div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="bar"></span>每日学习</div>
+    <div id="dailyBox"></div>
+
+    <div class="sec-title"><span class="bar"></span>训练模块</div>
+    <div class="grid">
+      <div class="card" data-goto="vocab"><div class="ic">🔤</div><h3>词汇训练</h3>
+        <p>305 条民航专业词汇与词组，卡片速记 + 四选一测验，自动记录掌握进度。</p><span class="go">开始背词 →</span></div>
+      <div class="card" data-goto="listen"><div class="ic">🎧</div><h3>听力复述</h3>
+        <p>语音朗读词汇与题干，0.5~2 倍速可调，先听后看原文，模拟听读复述训练。</p><span class="go">开始听力 →</span></div>
+      <div class="card" data-goto="opi"><div class="ic">🗣️</div><h3>OPI 题库</h3>
+        <p>318 道 OPI 问答，按 5 大章 76 小节分类，先自答再看高分范例，支持语音读题。</p><span class="go">刷题库 →</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 词汇 ============ -->
+  <section class="view" id="view-vocab">
+    <div class="sec-title"><span class="bar"></span>词汇训练</div>
+    <div class="crumb"><b onclick="show('vocab')">词汇训练</b> <span id="vbCrumb"></span></div>
+    <div id="vbHome">
+      <div class="count-note" id="vbCount"></div>
+      <div class="chip-row" id="vbCats"></div>
+      <div class="chip-row" style="margin-top:18px">
+        <span class="chip" data-mode="flash">📇 卡片速记</span>
+        <span class="chip" data-mode="quiz">✍️ 四选一测验</span>
+      </div>
+    </div>
+    <div id="vbFlash" style="display:none">
+      <div class="progress-bar"><i id="vbProg"></i></div>
+      <div class="flash" id="flashCard" onclick="flipCard()">
+        <div class="cat" id="fCat"></div>
+        <div class="word" id="fWord"></div>
+        <div class="mean" id="fMean">点击卡片查看释义 / 朗读</div>
+        <div class="hint">点卡片翻面 · 左右键切换 · 空格朗读</div>
+      </div>
+      <div class="flash-ctl">
+        <button class="btn ghost small" onclick="vbPrev()">← 上一个</button>
+        <button class="btn small" onclick="speakCur()">🔊 朗读</button>
+        <button class="btn ghost small" style="color:var(--green)" id="btnKnow" onclick="markVocab(true)">✓ 掌握了</button>
+        <button class="btn ghost small" style="color:var(--amber)" id="btnAgain" onclick="markVocab(false)">↻ 再练</button>
+        <button class="btn ghost small" onclick="vbNext()">下一个 →</button>
+      </div>
+      <div class="flash-ctl"><button class="btn ghost small" onclick="show('vocab');vbShowHome()">← 返回列表</button></div>
+    </div>
+    <div id="vbQuiz" style="display:none">
+      <div class="progress-bar"><i id="qzProg"></i></div>
+      <div class="quiz-q" id="qzQ"></div>
+      <div class="opts" id="qzOpts"></div>
+      <div class="quiz-fb" id="qzFb"></div>
+      <div class="flash-ctl" style="margin-top:18px">
+        <button class="btn ghost small" onclick="show('vocab');vbShowHome()">← 退出测验</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 听力 ============ -->
+  <section class="view" id="view-listen">
+    <div class="sec-title"><span class="bar"></span>听力复述</div>
+    <div class="count-note">选择素材来源，听朗读后自己复述一遍，再对照原文。<br>💡 无法自动录音评分，自我对照：能完整复述=过，卡壳=再听一遍。</div>
+    <div class="chip-row" id="lsCats"></div>
+    <div class="listen-box">
+      <div class="src" id="lsSrc"></div>
+      <div class="sentence" id="lsSent"></div>
+      <div class="trans" id="lsTrans"></div>
+      <div class="rate-row">
+        <span style="font-size:12.5px;color:var(--sub)">语速</span>
+        <input type="range" id="lsRate" min="0.5" max="2" step="0.1" value="1" oninput="lsRateTxt()">
+        <span class="rv" id="lsRateV">1.0×</span>
+      </div>
+      <div class="listen-ctl">
+        <button class="btn small" onclick="lsPlay()">▶ 播放</button>
+        <button class="btn ghost small" onclick="lsReveal()">👁 显示原文</button>
+        <button class="btn ghost small" style="color:var(--green)" onclick="lsMark(1)">✓ 复述OK</button>
+        <button class="btn ghost small" style="color:var(--amber)" onclick="lsMark(2)">↻ 再练</button>
+        <button class="btn ghost small" onclick="lsNext()">下一条 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPI 题库 ============ -->
+  <section class="view" id="view-opi">
+    <div class="sec-title"><span class="bar"></span>OPI 题库 · 318 题</div>
+    <div class="crumb"><b onclick="show('opi');opiLevel=0;renderOpi()">题库</b> <span id="opiCrumb"></span></div>
+    <div id="opiList"></div>
+  </section>
+</main>
+
+<div class="tabbar">
+  <div class="tab on" data-v="home"><span class="ti">🏠</span><span class="tt">首页</span></div>
+  <div class="tab" data-v="vocab"><span class="ti">🔤</span><span class="tt">词汇</span></div>
+  <div class="tab" data-v="listen"><span class="ti">🎧</span><span class="tt">听力</span></div>
+  <div class="tab" data-v="opi"><span class="ti">🗣️</span><span class="tt">OPI</span></div>
+</div>
+
+<footer>一起学ICAO · 民航英语学习平台 · 素材来源：OPI小无相功（124页）+ OPI词组与专业词汇速查表<br>
+进度保存在浏览器本地（localStorage），清除浏览器数据会丢失进度。</footer>
+
+<script src="data.js"></script>
+<script>
+/* ================= 工具 ================= */
+const LS = {
+  get(k,d){ try{ return JSON.parse(localStorage.getItem('icao.'+k)) ?? d }catch(e){ return d } },
+  set(k,v){ localStorage.setItem('icao.'+k, JSON.stringify(v)) }
+};
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+let speakVoice = null;
+function speak(text, rate=1){
+  if(!('speechSynthesis' in window)) { alert('当前浏览器不支持语音朗读'); return }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = rate;
+  const vs = speechSynthesis.getVoices();
+  const en = vs.find(v=>/en[-_]US/i.test(v.lang) && /female|Samantha|Google US/i.test(v.name)) || vs.find(v=>/^en/i.test(v.lang));
+  if(en) u.voice = en;
+  speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window) speechSynthesis.onvoiceschanged = ()=>{};
+
+function show(v){
+  $$('.view').forEach(x=>x.classList.remove('on'));
+  $('#view-'+v).classList.add('on');
+  $$('.navlink').forEach(x=>x.classList.toggle('on', x.dataset.v===v));
+  $$('.tab').forEach(x=>x.classList.toggle('on', x.dataset.v===v));
+  window.scrollTo(0,0);
+}
+$$('.navlink,.tab').forEach(t=>t.addEventListener('click',()=>show(t.dataset.v)));
+$$('.card[data-goto]').forEach(c=>c.addEventListener('click',()=>show(c.dataset.goto)));
+
+const now = new Date();
+const WD = ['日','一','二','三','四','五','六'];
+$('#topDate').innerHTML = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}<br>星期${WD[now.getDay()]}`;
+
+/* ================= 每日卡片 ================= */
+const DAILY_PLAN = [
+  {t:'核心动词词组', tip:'今天练动词词组，注意搭配介词'},
+  {t:'气象词汇', tip:'复杂气象是OPI高频话题'},
+  {t:'非正常情况', tip:'特情处置表达，考试重点'},
+  {t:'飞行程序与系统', tip:'系统描述+程序表达'},
+  {t:'导航与进近', tip:'进近类型与导航设备'},
+  {t:'缩略语与系统', tip:'缩略语全称必须会说'},
+  {t:'本周复习', tip:'温故知新，翻翻本周标记"再练"的词'}
+];
+function buildDaily(){
+  const wd = now.getDay();
+  const plan = DAILY_PLAN[wd];
+  const cat = (wd===6)
+    ? VOCAB[0]
+    : (VOCAB[wd] || VOCAB[0]);
+  const sub = cat.subs[now.getDate() % cat.subs.length];
+  const items = sub.items.slice(0,5);
+  let html = `<div class="daily-box"><div class="daily-head">
+      <span class="daily-tag">每日学习</span>
+      <span class="daily-date">${now.getMonth()+1}月${now.getDate()}日 · 星期${WD[wd]} · ${plan.t}</span></div>
+    <div class="daily-body">
+    <h4>🔑 ${sub.title}</h4><ul>`;
+  items.forEach(it=>{
+    html += `<li><span class="en" style="cursor:pointer;color:var(--cyan)" onclick="speak('${it.en.replace(/'/g,"\\'")}')">🔊 ${it.en}</span><br><span class="zh">${it.zh}</span></li>`;
+  });
+  html += `</ul><h4>💡 今日提示</h4><div class="tip">${plan.tip} — 点词可以听发音。</div>
+    <div style="margin-top:12px"><button class="btn small" onclick="show('vocab')">去练这个词表 →</button></div>
+    </div></div>`;
+  $('#dailyBox').innerHTML = html;
+}
+
+/* ================= 词汇训练 ================= */
+let vbCat = 0, vbSub = null, vbMode = 'list', vbList = [], vbIdx = 0, flipped = false;
+const vbDone = LS.get('vbDone', {});
+function vbFlat(ci){
+  const c = VOCAB[ci];
+  return c.subs.flatMap((s,si)=>s.items.map((it,ii)=>({...it, cat:c.title.replace(/^[一二三四五六七八九十]+、\s*/,''), sub:s.title, id:ci+'-'+si+'-'+ii})));
+}
+function renderVbCats(){
+  $('#vbCats').innerHTML = VOCAB.map((c,i)=>
+    `<span class="chip ${i===vbCat?'sel':''}" onclick="pickVbCat(${i})">${c.title.replace(/^[一二三四五六七八九十]+、\s*/,'').split(' ')[0]} <b style="color:var(--cyan)">${vbFlat(i).length}</b></span>`).join('');
+  $('#vbCount').innerHTML = `共 <b style="color:var(--cyan)">${vbFlat(vbCat).length}</b> 词条 · 已掌握 <b style="color:var(--green)">${Object.values(vbDone).filter(x=>x===1).length}</b>`;
+}
+function pickVbCat(i){ vbCat=i; renderVbCats(); }
+$$('.chip[data-mode]').forEach(c=>c.addEventListener('click',()=>{
+  vbMode=c.dataset.mode; vbList=vbFlat(vbCat); 
+  if(!vbList.length) return;
+  vbIdx = now.getDate() % vbList.length;
+  if(vbMode==='flash'){ $('#vbHome').style.display='none'; $('#vbQuiz').style.display='none'; $('#vbFlash').style.display='block'; renderFlash(); }
+  else { $('#vbHome').style.display='none'; $('#vbFlash').style.display='none'; $('#vbQuiz').style.display='block'; qzNew(); }
+}));
+function vbShowHome(){ vbMode='list'; $('#vbFlash').style.display='none'; $('#vbQuiz').style.display='none'; $('#vbHome').style.display='block'; renderVbCats(); }
+function renderFlash(){
+  const it = vbList[vbIdx];
+  flipped = false;
+  $('#fCat').textContent = it.cat + ' · ' + it.sub + ' · ' + (vbIdx+1) + '/' + vbList.length;
+  $('#fWord').textContent = it.en; $('#fWord').classList.remove('zh');
+  $('#fMean').textContent = '点击卡片查看释义 · 点"朗读"听发音';
+  $('#vbProg').style.width = ((vbIdx+1)/vbList.length*100)+'%';
+  $('#btnKnow').classList.toggle('did', vbDone[it.id]===1);
+  $('#btnAgain').classList.toggle('again', vbDone[it.id]===2);
+}
+function flipCard(){
+  const it = vbList[vbIdx];
+  if(!flipped){ flipped=true; $('#fWord').textContent = it.zh; $('#fWord').classList.add('zh'); $('#fMean').textContent = it.en; }
+  else { speak(it.en); }
+}
+function speakCur(){ speak(vbList[vbIdx].en) }
+function vbNext(){ vbIdx=(vbIdx+1)%vbList.length; renderFlash() }
+function vbPrev(){ vbIdx=(vbIdx-1+vbList.length)%vbList.length; renderFlash() }
+function markVocab(ok){
+  const it = vbList[vbIdx];
+  vbDone[it.id] = ok?1:2; LS.set('vbDone',vbDone);
+  $('#btnKnow').classList.toggle('did', ok);
+  $('#btnAgain').classList.toggle('again', !ok);
+  renderVbCatsLater();
+  setTimeout(vbNext, 200);
+}
+let rvcT=null; function renderVbCatsLater(){ clearTimeout(rvcT); rvcT=setTimeout(()=>{ if(vbMode==='list') renderVbCats(); refreshStats() }, 400) }
+
+/* 测验 */
+let qzAns=0, qzRight=0, qzQ=0, qzOpts=[], qzOkIdx=-1, qzMode=0;
+function qzNew(){
+  if(vbIdx >= vbList.length){ $('#qzQ').textContent='本轮完成！正确率 ' + Math.round(qzRight/Math.max(qzAns,1)*100) + '%'; $('#qzOpts').innerHTML=''; $('#qzFb').innerHTML='<button class="btn small" onclick="qzRestart()">再来一轮</button>'; return; }
+  const it = vbList[vbIdx];
+  qzMode = Math.random()<.5?0:1; // 0: EN->ZH, 1: ZH->EN
+  const others = vbFlat(vbCat).filter(x=>x.id!==it.id).sort(()=>Math.random()-.5).slice(0,3);
+  qzOpts = [...others.map(o=>({en:o.en, zh:o.zh, ok:false})), {en:it.en, zh:it.zh, ok:true}].sort(()=>Math.random()-.5);
+  qzOkIdx = qzOpts.findIndex(o=>o.ok);
+  $('#qzQ').innerHTML = (qzMode===0? it.en : it.zh) + (qzMode===0? ' <span style="font-size:13px;color:var(--sub)">— 选出中文释义</span>':' <span style="font-size:13px;color:var(--sub)">— 选出英文表达</span>');
+  if(qzMode===0) speak(it.en);
+  $('#qzOpts').innerHTML = qzOpts.map((o,i)=>`<div class="opt" data-i="${i}" onclick="qzPick(${i})">${qzMode===0?o.zh:o.en}</div>`).join('');
+  $('#qzFb').textContent=''; $('#qzProg').style.width=(vbIdx/vbList.length*100)+'%';
+}
+function qzPick(i){
+  $$('#qzOpts .opt').forEach(o=>{const oi=+o.dataset.i; if(oi===qzOkIdx)o.classList.add('correct'); });
+  qzAns++;
+  const it = vbList[vbIdx];
+  if(i===qzOkIdx){ qzRight++; vbDone[it.id]=1; LS.set('vbDone',vbDone); $('#qzFb').innerHTML='<b class="ok">✓ 正确！</b>'; }
+  else{ $$('#qzOpts .opt')[i].classList.add('wrong'); vbDone[it.id]=2; LS.set('vbDone',vbDone);
+    $('#qzFb').innerHTML=`<b class="no">✗ 正确答案：</b>${qzMode===0? qzOpts[qzOkIdx].zh : qzOpts[qzOkIdx].en}`; }
+  refreshStats();
+  setTimeout(()=>{ vbIdx++; qzNew(); }, 1400);
+}
+function qzRestart(){ vbIdx=0; qzAns=0; qzRight=0; qzNew(); }
+
+/* ================= 听力复述 ================= */
+let lsPool = [], lsIdx = 0, lsShown = false;
+function lsBuildPool(ci){
+  const c = VOCAB[ci];
+  lsPool = c.subs.flatMap(s=>s.items.map(it=>({en:it.en, zh:it.zh, src:c.title.replace(/^[一二三四五六七八九十]+、\s*/,'') + ' · ' + s.title})));
+  lsIdx = now.getDate() % Math.max(lsPool.length,1);
+  lsRender();
+}
+function renderLsCats(){
+  $('#lsCats').innerHTML = VOCAB.map((c,i)=>`<span class="chip ${i===0?'sel':''}" onclick="pickLsCat(${i})">${c.title.replace(/^[一二三四五六七八九十]+、\s*/,'').split(' ')[0]}</span>`).join('');
+}
+function pickLsCat(i){ $$('#lsCats .chip').forEach((c,ci)=>c.classList.toggle('sel',ci===i)); lsBuildPool(i); }
+function lsRender(){
+  const it = lsPool[lsIdx]; lsShown=false;
+  $('#lsSrc').textContent = it.src + ' · ' + (lsIdx+1) + '/' + lsPool.length;
+  $('#lsSent').textContent = '▶ 点击"播放"听朗读，复述后再显示原文';
+  $('#lsSent').classList.add('hidden-txt');
+  $('#lsTrans').textContent = '';
+}
+function lsPlay(){ const it=lsPool[lsIdx]; speak(it.en, +$('#lsRate').value) }
+function lsRateTxt(){ $('#lsRateV').textContent = (+$('#lsRate').value).toFixed(1)+'×' }
+function lsReveal(){
+  const it = lsPool[lsIdx]; lsShown=true;
+  $('#lsSent').textContent = it.en; $('#lsSent').classList.remove('hidden-txt');
+  $('#lsTrans').textContent = it.zh;
+}
+function lsNext(){ lsIdx=(lsIdx+1)%lsPool.length; lsRender(); }
+function lsMark(m){ const it=lsPool[lsIdx]; if(!lsShown) lsReveal(); lsNext(); }
+
+/* ================= OPI 题库 ================= */
+let opiLevel = 0, opiCh = -1, opiSub = -1;
+const qaDone = LS.get('qaDone', {});
+function renderOpi(){
+  $('#opiCrumb').textContent = '';
+  if(opiLevel===0){
+    $('#opiList').innerHTML = OPI_QA.map((ch,i)=>{
+      const n = ch.subs.reduce((a,s)=>a+s.qa.length,0);
+      const done = ch.subs.flatMap(s=>s.qa).filter((_,j)=>qaDone[i+'-'+j]).length;
+      return `<div class="panel" style="margin-bottom:11px;cursor:pointer" onclick="opiOpenCh(${i})">
+        <h3 style="font-size:15.5px">${ch.title.split('\n')[0]} <span style="color:var(--sub);font-size:12.5px;font-weight:400">${n}题 · 已完成${done}</span></h3></div>`;
+    }).join('');
+  } else if(opiLevel===1){
+    const ch = OPI_QA[opiCh];
+    $('#opiCrumb').innerHTML = ` / ${ch.title.split('\n')[0]}`;
+    $('#opiList').innerHTML = ch.subs.map((s,si)=>{
+      const done = s.qa.filter((_,j)=>qaDone[opiCh+'-'+si+'-'+j]).length;
+      return `<div class="panel" style="margin-bottom:11px;cursor:pointer" onclick="opiOpenSub(${si})">
+        <h3 style="font-size:14.5px">${s.title} <span style="color:var(--sub);font-size:12px;font-weight:400">${s.qa.length}题${done? ' · 已完成'+done:''}</span></h3></div>`;
+    }).join('');
+  } else {
+    const ch = OPI_QA[opiCh], sub = ch.subs[opiSub];
+    $('#opiCrumb').innerHTML = ` / ${ch.title.split('\n')[0]} / ${sub.title}`;
+    $('#opiList').innerHTML = sub.qa.map((qa,j)=>{
+      const key = opiCh+'-'+opiSub+'-'+j;
+      const st = qaDone[key];
+      return `<div class="qa-item">
+        <div class="qa-q"><span class="num">Q${j+1}</span><span>${qa.q} <button class="mark-btn" onclick="speak(${JSON.stringify(qa.q).replace(/"/g,'&quot;')})" style="margin-left:6px">🔊 听题</button></span></div>
+        <div class="qa-a hidden" id="qaA-${j}">${qa.a||'（本条暂无参考答案，可结合EFB与个人经验准备）'}</div>
+        <div class="qa-tools">
+          <button class="mark-btn" onclick="toggleAns(${j})">👁 看高分答案</button>
+          <button class="mark-btn ${st===1?'did':''}" onclick="markQA('${key}',1,this)">✓ 掌握</button>
+          <button class="mark-btn ${st===2?'again':''}" onclick="markQA('${key}',2,this)">↻ 再练</button>
+        </div></div>`;
+    }).join('');
+  }
+}
+function opiOpenCh(i){ opiCh=i; opiLevel=1; renderOpi(); window.scrollTo(0,0) }
+function opiOpenSub(i){ opiSub=i; opiLevel=2; renderOpi(); window.scrollTo(0,0) }
+function toggleAns(j){
+  const el = $('#qaA-'+j);
+  el.classList.toggle('hidden');
+  if(!el.classList.contains('hidden') && OPI_QA[opiCh].subs[opiSub].qa[j].a) speak(OPI_QA[opiCh].subs[opiSub].qa[j].q);
+}
+function markQA(key, v, btn){
+  qaDone[key]=v; LS.set('qaDone',qaDone); refreshStats();
+  $$(`#opiList .qa-item`).forEach(()=>{});
+  const item = btn.closest('.qa-item');
+  item.querySelectorAll('.mark-btn')[1].classList.toggle('did', v===1);
+  item.querySelectorAll('.mark-btn')[2].classList.toggle('again', v===2);
+}
+
+/* ================= 统计 ================= */
+function refreshStats(){
+  const vd = Object.values(vbDone).filter(x=>x===1).length;
+  const qd = Object.values(qaDone).filter(x=>x===1).length;
+  $('#stVocab').textContent = vd; $('#stQA').textContent = qd; $('#stTotal').textContent = vd+qd;
+}
+
+/* ================= 键盘 ================= */
+document.addEventListener('keydown', e=>{
+  if($('#view-vocab').classList.contains('on') && vbMode==='flash'){
+    if(e.key==='ArrowRight') vbNext();
+    if(e.key==='ArrowLeft') vbPrev();
+    if(e.key===' '){ e.preventDefault(); speakCur(); }
+    if(e.key==='Enter') flipCard();
+  }
+});
+
+/* ================= 启动 ================= */
+buildDaily(); renderVbCats(); renderLsCats(); lsBuildPool(0); renderOpi(); refreshStats();
+</script>
+</body>
+</html>
